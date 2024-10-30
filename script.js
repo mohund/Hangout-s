@@ -1,7 +1,6 @@
 const searchBtn = document.getElementById("search");
 searchBtn.addEventListener("click", searchUsingFetchAsyncAwait);
 const cityName = document.getElementById("city-name");
-// const numberOfPeople = document.getElementById("numberOfPeople");
 const eventName = document.getElementById("eventType");
 const activities = [
   "Bowling",
@@ -39,10 +38,14 @@ function populateDropdown( eventType) {
 
 
 async function searchUsingFetchAsyncAwait() {
-  console.log("searching for " + eventName.value + " in " + cityName.value);
+  if (!cityName.value) {
+    alert("Please enter a city name");
+    return;
+  }
+
   const { Place } = await google.maps.importLibrary("places");
   const request = {
-    fields: ["displayName", "formattedAddress", "businessStatus"],
+    fields: ["displayName", "formattedAddress", "businessStatus", "googleMapsURI"],
     textQuery: eventName.value + " " + cityName.value,
     isOpenNow: true,
   };
@@ -72,7 +75,7 @@ function displayResults(data) {
           (element) => `
           <tr>
             <td>${element.displayName || "N/A"}</td>
-            <td>${element.formattedAddress || "N/A"}</td>
+             <td><a href="${element.googleMapsURI}" target="_blank">${element.formattedAddress || "N/A"}</a></td>
             <td>${element.businessStatus === "OPERATIONAL" ? "Open" : "Closed"}</td>
           </tr>`
         )
